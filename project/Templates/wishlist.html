@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<!-- Cart Start -->
+<div class="container mt-5">
+    <h1>My Wishlist</h1>
+    <ul class="list-group">
+        {% for wishlist_item in wishlist_items %}
+        <li class="list-group-item">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <img src="{{ wishlist_item.product.image.url }}" width="200px" height="200px" alt="" class="img-fluid">
+                    <h4>{{ wishlist_item.product.product_name }}</h4>
+                    <p class="text-success">Price: ${{ wishlist_item.product.price }}</p>
+                    <p>Description: {{ wishlist_item.product.description }}</p>
+                </div>
+                <div>
+                    <a href="{% url 'add_to_cart' wishlist_item.product.id %}" class="btn btn-warning">Move to Cart</a>
+                    <a href="{% url 'remove_from_wishlist' wishlist_item.id %}" class="btn btn-warning">Remove from Wishlist</a>
+                </div>
+            </div>
+        </li>
+        {% empty %}
+        <li class="list-group-item">Your wishlist is empty.</li>
+        {% endfor %}
+    </ul>
+</div>
+
+              
+           
+       
+       
+       
+      
+    </div>
+</div>
+<!-- Cart End -->
+{% endblock %}

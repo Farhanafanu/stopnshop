@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<main>
+    <!-- page-banner-area-start -->
+    <div class="page-banner-area page-banner-height-2" data-background="{% static 'assets/img/banner/page-banner-4.jpg' %}">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="page-banner-content text-center">
+                        <h4 class="breadcrumb-title">My account</h4>
+                        <div class="breadcrumb-two">
+                            <nav>
+                               <nav class="breadcrumb-trail breadcrumbs">
+                                  <ul class="breadcrumb-menu">
+                                     <li class="breadcrumb-trail">
+                                        <a href="{% url 'home' %}"><span>Home</span></a>
+
+                                     </li>
+                                     <li class="trail-item">
+                                        <span>My account</span>
+                                     </li>
+                                  </ul>
+                               </nav> 
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- page-banner-area-end -->
+
+    <!-- account-area-start -->
+    <div class="account-area mt-70 mb-70">
+        <div class="container">
+            {% if messages %}
+            {% for message in messages %}
+            {% if message.tags == 'error' %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="basic-login mb-50">
+                        <h5>Login</h5>
+                       
+                        <form action="{% url 'handlelogin' %}" method="post">
+                            {% csrf_token %}
+                            <label for="email">email address  <span>*</span></label>
+                            <input id="email" type="text" placeholder="Enter Email" name="email">
+                            <label for="pass">Password <span>*</span></label>
+                            <input id="pass" type="password" placeholder="Enter password..." name="password">
+                            <a class="px-2" href="#" data-toggle="modal" data-target="#forgotPasswordModal">Forgot password</a>
+
+                         
+                            <button type="submit" class="tp-in-btn w-100">Log in</button>
+                        </div>
+                            
+                        </form>
+                    </div>
+                </div>
+                
+                </div>
+            </div>
+        </div>
+    </div>
+    
+  <!-- Modal for forgot password -->
+  <div class="modal" id="forgotPasswordModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 style="font-weight: bold;" class="modal-title">Forgot Password</h5>
+          <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button> -->
+        </div>
+        <div class="modal-body">
+          <form method="post" action="{% url 'forgot_password' %}">
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="email">Enter your email:</label>
+              <input name="email" type="email" class="form-control" id="email" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+       
+
+    <!-- cta-area-start -->
+    <section class="cta-area d-ldark-bg pt-55 pb-10">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6">
+                    <div class="cta-item cta-item-d mb-30">
+                        <h5 class="cta-title">Follow Us</h5>
+                        <p>We make consolidating, marketing and tracking your social media website easy.</p>
+                        <div class="cta-social">
+                            <div class="social-icon">
+                                <a href="#" class="facebook"><i class="fab fa-facebook-f"></i></a>
+                                <a href="#" class="twitter"><i class="fab fa-twitter"></i></a>
+                                <a href="#" class="youtube"><i class="fab fa-youtube"></i></a>
+                                <a href="#" class="linkedin"><i class="fab fa-linkedin-in"></i></a>
+                                <a href="#" class="rss"><i class="fas fa-rss"></i></a>
+                                <a href="#" class="dribbble"><i class="fab fa-dribbble"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="cta-item mb-30">
+                        <h5 class="cta-title">Sign Up To Newsletter</h5>
+                        <p>Join 60.000+ subscribers and get a new discount coupon  on every Saturday.</p>
+                        <div class="subscribe__form">
+                            <form action="#">
+                                <input type="email" placeholder="Enter your email here...">
+                                <button>subscribe</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="cta-item mb-30">
+                        <h5 class="cta-title">Download App</h5>
+                        <p>DukaMarket App is now available on App Store & Google Play. Get it now.</p>
+                        <div class="cta-apps">
+                            <div class="apps-store">
+                                <a href="#"><img src="assets/img/brand/app_ios.png" alt=""></a>
+                                <a href="#"><img src="assets/img/brand/app_android.png" alt=""></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+    <!-- cta-area-end -->
+    <!-- Add Bootstrap JS -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+    crossorigin="anonymous"></script>
+
+</main>
+
+
+
+
+
+
+
+
+{% endblock %}

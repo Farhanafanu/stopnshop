@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+
+
+<body>
+    <div class="container">
+        <h2>Search Results</h2>
+        <div class="row">
+            {% for product in  products %}
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                       
+                        <a class="product-item" href="">
+                            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.product_name }}"  style="max-width: 200px; max-height: 200px;">
+                            <div class="card-body">
+                                <h5 class="card-title" style="color: black;">{{ product.product_name }}</h5>
+                                    <p class="card-text" style="color: black;">{{ product.description }}</p>
+                                    <p class="card-text" style="color: black;">Price: {{ product.price }}</p>
+                            </div>
+                        </a>
+                       
+                        <div class="card-footer d-flex justify-content-between bg-light border">
+                            {% if user.is_authenticated %}
+
+                            <a href="{% url 'userproduct' product.id %}" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
+                            <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary">Add to Cart</a>
+                            {% endif  %}
+
+                        </div>
+                    </div>
+                   
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

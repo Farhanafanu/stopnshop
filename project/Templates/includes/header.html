@@ -1,0 +1,287 @@
+{% load static %}
+<style>
+    .search-suggestions {
+    width: calc(100% - 40px);  /* Width of search bar minus button width */
+    max-height: 200px;  /* Optional: Set a maximum height */
+    overflow-y: auto;  /* Add a scrollbar if the suggestions exceed max-height */
+    position: absolute;  /* To position it directly below the search input */
+    top: 100%;  /* Push it down to be under the input */
+    left: 0;  /* Align it to the left side of the search input */
+    z-index: 1;  /* To ensure it shows above other elements */
+    background-color: white;  /* Background color for the suggestion box */
+    border: 1px solid #ccc;  /* Border around the suggestion box */
+    border-top: none;  /* Remove top border to merge with search bar */
+}
+
+.search-suggestions div {
+    padding: 10px;  /* Space inside each suggestion */
+    cursor: pointer;  /* Change cursor to indicate clickable */
+    border-bottom: 1px solid #eaeaea;  /* Border between suggestions */
+}
+
+.search-suggestions div:last-child {
+    border-bottom: none;  /* Remove border from the last suggestion */
+}
+
+.search-suggestions div:hover {
+    background-color: #f6f6f6;  /* Change background on hover for better UX */
+}
+
+</style>
+
+<header class="header d-blue-bg">
+    <div class="header-top">
+        <div class="container">
+            <div class="header-inner">
+                <div class="row align-items-center">
+                    <div class="col-xl-6 col-lg-7">
+                        <div class="header-inner-start">
+                            <div class="header__currency border-right">
+                                <div class="s-name">
+                                    <span>Language: </span>
+                                </div>
+                                <select>
+                                    <option>English</option>
+                                    
+                                </select>
+                            </div>
+                            <div class="header__lang border-right">
+                                <div class="s-name">
+                                    <span>Currency: </span>
+                                </div>
+                                <select>
+                                   
+                                    <option>INR</option>
+                                    
+                                </select>
+                            </div>
+                            <div class="support d-none d-sm-block">
+                                <p>Need Help? <a href="tel:+001123456789">+001 123 456 789</a></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-6 col-lg-5 d-none d-lg-block">
+                        <div class="header-inner-end text-md-end">
+                            <div class="ovic-menu-wrapper">
+                                <ul>
+                                    {% if user.is_authenticated %}
+                                    <li style="color: white;">Hello, {{ user.username }}</li>
+                                        <li><a href="{% url 'userlogout' %}">Logout</a></li>
+                                        
+                                    {% else %}
+                                        <li><a href="{% url 'handlelogin' %}">Sign in</a></li>
+                                    {% endif %}
+                                    {% if user.is_authenticated %}
+                                    <li><a href="{% url 'contact' %}">Contact Us</a></li>
+                                    {% endif %}
+                                    <li><a href="faq.html">FAQs</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="header-mid">
+        <div class="container">
+            <div class="heade-mid-inner">
+                <div class="row align-items-center">
+                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-4">
+                        <div class="header__info">
+                            <div class="logo">
+                                <a href="index.html" class="logo-image"><img src="{% static 'assets/img/logo/logo5.png' %}" alt="logo"></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-5 col-lg-4 d-none d-lg-block">
+                        <form method="get" action="{% url 'search' %}">
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="q" placeholder="Search for products">
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-warning" style="width: 40px !important;">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                     
+
+                    <div class="col-xl-4 col-lg-5 col-md-8 col-sm-8">
+                        <div class="header-action">
+                           
+
+                            <div class="block-userlink">
+                                {% if not user.is_authenticated %}
+                                <a class="icon-link" href="{% url 'handleregister' %}">
+                                    
+                                <i class="flaticon-user"></i>
+                                <span class="text">
+                                <span class="sub">Register</span>
+                                 
+                                </a>
+                                {% endif %}
+                                
+                            </div>
+                            <div class="block-wishlist action">
+                                {% if user.is_authenticated %}
+                                <a class="icon-link" href="{% url 'wishlist' %}">
+                                <i class="flaticon-heart"></i>
+                                <span class="count">0</span>
+                                <span class="text">
+                                <span class="sub">Favorite</span>
+                                My Wishlist </span>
+
+                                </a>
+                                {% endif %}
+                            </div>
+                            <div class="block-cart action">
+                                {% if user.is_authenticated %}
+                                <a class="icon-link" href="{% url 'cart' %}">
+                                <i class="flaticon-shopping-bag"></i>
+                                <span class="count">1</span>
+                                <span class="text">
+                                <span class="sub">Your Cart:</span>
+                                 </span>
+                                </a>
+                                {% endif %}
+                                       
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="header__bottom">
+        <div class="container">
+            <div class="row g-0 align-items-center">
+                <div class="col-lg-3">                        
+                    <div class="cat__menu-wrapper side-border d-none d-lg-block">
+                        <div class="cat-toggle">
+                            <button type="button" class="cat-toggle-btn cat-toggle-btn-1"><i class="fal fa-bars"></i> Shop by department</button>
+                            <div class="cat__menu">
+                                <nav id="mobile-menu" style="display: block;">
+                                    <ul>
+                                        <li>
+                                            
+                                               
+                                                    <ul class="mega-item">
+                                                        {% if user.is_authenticated %}
+                                                        <li><a href="{% url 'wishlist' %}">wishlist</a></li>
+                                                        <li><a href="{% url 'cart' %}">Shopping Cart</a></li>
+                                                       {% endif %}
+                                                        <li><a href="{% url 'handlelogin' %}">Login</a></li>
+                                                        <li><a href="{% url 'handleregister' %}">Register</a></li>
+                                                    </ul>
+                                                </li>
+                                                
+                                            </ul>
+                                        </li>
+                                        <li>
+                                           
+                                                
+                                     
+                                           
+                                        
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-3">
+                  <div class="header__bottom-left d-flex d-xl-block align-items-center">
+                    <div class="side-menu d-lg-none mr-20">
+                      <button type="button" class="side-menu-btn offcanvas-toggle-btn"><i class="fas fa-bars"></i></button>
+                    </div>
+                    <div class="main-menu d-none d-lg-block">
+                        <nav>
+                            <ul>
+                                <li>
+                                    <a href="{% url 'home' %}" class="active">Home </a>
+                                    
+                                </li>
+                               
+                                <li class="has-mega"><a href="{% url 'shop' %}">Shop </a>
+                                    
+                                </li>
+                                
+                                <li>
+                                    <a href="{% url 'profile' %}">My Account </a>
+                                    
+                                </li>
+                                {% if user.is_authenticated %}
+                                <li><a href="{% url 'customer_order' %}">Order Tracking</a></li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-9">
+                    <div class="shopeing-text text-sm">
+                        <p>Spend $120 more and get free shipping!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<!-- header-end -->
+<!-- offcanvas area start -->
+<div class="offcanvas__area">
+    <div class="offcanvas__wrapper">
+    <div class="offcanvas__close">
+        <button class="offcanvas__close-btn" id="offcanvas__close-btn">
+            <i class="fal fa-times"></i>
+        </button>
+    </div>
+    <div class="offcanvas__content">
+        <div class="offcanvas__logo mb-40">
+            <a href="index.html">
+            <img src="{% static 'assets/img/logo/logo-white.png' %}" alt="logo">
+            </a>
+        </div>
+        <div class="offcanvas__search mb-25">
+            <form action="#">
+                <input type="text" placeholder="What are you searching for?">
+                <button type="submit" ><i class="far fa-search"></i></button>
+            </form>
+        </div>
+        <div class="mobile-menu fix"></div>
+        <div class="offcanvas__action">
+
+        </div>
+    </div>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const searchInput = document.querySelector('input[name="q"]');
+        const suggestionBox = document.createElement('div');
+        suggestionBox.className = 'search-suggestions';
+        searchInput.parentNode.parentNode.appendChild(suggestionBox);
+
+
+        searchInput.addEventListener('input', function() {
+            fetch(`/search-suggestions/?q=${this.value}`)
+            .then(response => response.json())
+            .then(data => {
+                suggestionBox.innerHTML = '';
+                data.forEach(item => {
+                    const div = document.createElement('div');
+                    div.innerText = item;
+                    div.addEventListener('click', function() {
+                        searchInput.value = this.innerText;
+                        suggestionBox.innerHTML = '';  // Clear the suggestions when one is clicked
+                    });
+                    suggestionBox.appendChild(div);
+                });
+            });
+        });
+    });
+</script>
+
