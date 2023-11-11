@@ -735,10 +735,13 @@ def placeorder(request):
         messages.info(request, 'Input Address!!!')
         return redirect('check_out')
     if discount:
-        total -= discount
-    
-    address = Address.objects.get(id=request.POST.get('addressId'))
+        coupon=get_object_or_404(Coupon,discount_price=discount)
 
+        # user_coupon_usage, created = UsedCoupon.objects.get_or_create(
+        # user=user,coupon=coupon)
+        user_coupon = UsedCoupon.objects.create(user = user , coupon=coupon,is_used = True)
+        total -= discount
+    address = Address.objects.get(id=request.POST.get('addressId'))
     order = Order.objects.create(
         user          =     user,
         address       =     address,
@@ -749,7 +752,6 @@ def placeorder(request):
         product = cart_item.product
         product.stock -= cart_item.quantity
         product.save()
-
         order_item = OrderItem.objects.create(
             order         =     order,
             product       =     cart_item.product,
@@ -758,7 +760,6 @@ def placeorder(request):
         )
     cart_items.delete()
     return redirect('success')
-
 def success(request):
     orders = Order.objects.order_by('-id')[:1]
     context = {

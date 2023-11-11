@@ -438,17 +438,27 @@ def addcoupon(request):
 def apply_coupon(request):
     if request.method == 'POST':
         coupon_code = request.POST.get('coupon_code')
-        try:
-            coupon = Coupon.objects.get(coupon_code=coupon_code)
-        except Coupon.DoesNotExist:
-            messages.error(request, 'Invalid coupon code')
-            return redirect('checkout')
+        usedcoupon  = Coupon.objects.get(coupon_code = coupon_code)
+        usedcouponid = usedcoupon.id
         user = request.user
+        try:
+            couponuser = Customer.objects.get(email=user)
+            userid = couponuser.id
+           
+            
+        except Customer.DoesNotExist:
+            messages.error(request, "Customer not found.")
+            return redirect('cart')
+        
+       
+
+
         cart_items = Cart.objects.filter(user=user)
         subtotal = 0
         shipping_cost = 10
         total_dict = {}
         coupons = Coupon.objects.all()
+
         for cart_item in cart_items:
             if cart_item.quantity > cart_item.product.stock:
                 messages.warning(request, f"{cart_item.product.product_name} is out of stock.")
@@ -466,25 +476,42 @@ def apply_coupon(request):
                 item_price = cart_item.product.price * cart_item.quantity
                 total_dict[cart_item.id] = item_price
                 subtotal += item_price
-        if subtotal >= coupon.minimum_amount:
-            messages.success(request, 'Coupon applied successfully')
-            request.session['discount'] = coupon.discount_price
-            print( request.session['discount'])
-            total = subtotal - coupon.discount_price + shipping_cost
-        else:
-            messages.error(request, 'Coupon not available for this price')
+
+        try:
+            usedCoupon = UsedCoupon.objects.get(user_id=userid , coupon_id = usedcouponid )
+            messages.error(request, "Coupon already applied")
             total = subtotal + shipping_cost
+        except UsedCoupon.DoesNotExist:
+            # If the coupon code is valid and hasn't been used by the user, apply it here
+            try:
+                coupon = Coupon.objects.get(coupon_code=coupon_code)
+
+                if subtotal >= coupon.minimum_amount:
+                    messages.success(request, 'Coupon applied successfully')
+                    # UsedCoupon.objects.create(user_id=userid, coupon=coupon)  # Create a record that coupon is used
+                    request.session['discount'] = coupon.discount_price
+                    total = subtotal - coupon.discount_price + shipping_cost
+                else:
+                    messages.error(request, 'Coupon not available for this price')
+                    total = subtotal + shipping_cost
+            except Coupon.DoesNotExist:
+                messages.error(request, 'Invalid coupon code')
+                total = subtotal + shipping_cost
+
         for cart_item in cart_items:
             cart_item.total_price = total_dict.get(cart_item.id, 0)
             cart_item.save()
+
+
         context = {
             'cart_items': cart_items,
             'subtotal': subtotal,
             'total': total,
             'coupons': coupons,
-            'discount_amount': coupon.discount_price,
+            'discount_amount': request.session.get('discount',0),
         }
         return render(request, 'cart.html', context)
+    
     return redirect('cart')
 
 @cache_control(no_cache=True,must_revalidate=True,no_store=True)
