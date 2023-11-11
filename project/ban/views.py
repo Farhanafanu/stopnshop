@@ -347,26 +347,59 @@ def search_suggestions(request):
         suggestions = [product.product_name for product in products]
         return JsonResponse(suggestions, safe=False)
     return JsonResponse([], safe=False)
-@never_cache
-@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+
+  # Import your Product model correctly
+
+
 def search(request):
-    # Get the 'q' parameter from the GET request
     query = request.GET.get('q', '')
+    products = Product.objects.select_related('category', 'section').all()
+    products_with_offers = []  # This will hold our product dictionaries
+
+    for product in products:
+        # Calculate category offer and product offer
+        category_offer = product.category.category_offer if product.category.category_offer else 0
+        product_offer = product.product_offer if product.product_offer else 0
+
+        # Calculate discount and offer prices
+        discount_amount = (product.price * category_offer) / 100 if category_offer else 0
+        offer_price_amount = (product.price * product_offer) / 100 if product_offer else 0
+
+        # Use the highest priority offer
+        final_price = product.price - max(discount_amount, offer_price_amount)
+
+        # Create a dictionary for each product with all necessary data
+        product_data = {
+            'id': product.id,
+            'product_name': product.product_name,
+            'description': product.description,
+             'category': product.category.category_name,  # Use the correct field name from the Category model
+             'stock': product.stock,
+             'price': product.price,
+             'image_url': product.image.url,
+             'section': product.section.name if product.section else '',  # Handling a possible None value
+             'color': product.color,
+             'product_offer': product_offer,
+            'discounted_price': product.price - discount_amount if category_offer else None,
+             'offer_price': product.price - offer_price_amount if product_offer else None,
+             'final_price': final_price,
+}
+        products_with_offers.append(product_data)
+
+    # If there's a query, filter the products list
     if query:
-        # Perform a case-insensitive search on product names and descriptions
-        products = Product.objects.filter(
-            models.Q(product_name__icontains=query) |
-            models.Q(description__icontains=query)
-        )
-    else: # If no query, return all products
-        products = Product.objects.all()
-    # For example, you can filter products with names containing the query
-    search_results = Product.objects.filter(product_name__icontains=query)
+        products_with_offers = [
+            product for product in products_with_offers
+            if query.lower() in product['product_name'].lower() or query.lower() in product['description'].lower()
+        ]
+
     context = {
-        'products': products,
-        'search_results':  search_results,
+        'products': products_with_offers,
     }
-    return render(request, 'search.html',context)
+
+    # Now we render the template with the context containing product dictionaries
+    return render(request, 'search.html', context)
+
 
 
 def wallet(request):
